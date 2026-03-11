@@ -1,0 +1,2 @@
+# AI-Notes
+New Start
