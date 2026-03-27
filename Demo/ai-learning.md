@@ -25,7 +25,7 @@ Prompt要清晰，一个完整的Prompt通常包含：
 少样本学习，用例子教会AI做特定格式的任务
 # 6
 ## Streaming
-流式输出，让AI应用有更好的用户体验，为后续项目做准备（stream=True流式 + flush=True实时输出）
+流式输出，数据生成的同时被逐步发送或处理，而非等待全部生成后一次性输出，让AI应用有更好的用户体验，为后续项目做准备（stream=True流式 + flush=True实时输出）
 ## Token 用量统计
 prompt_tokens（输入） + completion_tokens（输出）
 ## 错误处理与重试机制
