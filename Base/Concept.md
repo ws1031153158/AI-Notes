@@ -160,3 +160,20 @@ Prompt要清晰，一个完整的Prompt通常包含：
 prompt_tokens（输入） + completion_tokens（输出）
 # 错误处理与重试机制
 必须有完善的错误处理，例如：触发限流、请求超时、API错误、未知错误等
+# LangChain
+开源框架，用于构建基于大型语言模型（LLM）的应用程序,提供各种工具，把做AI应用的重复工作都封装好，让你专注业务逻辑，不用重复造轮子、换模型成本低、开箱即用TAG、Memory等。  
+例如：Android的Jetpack  
+Retrofit 封装网络请求    →      LangChain 封装LLM调用  
+Room 管理本地数据库      →      LangChain 管理向量数据库  
+Jetpack 提供组件库       →      LangChain 提供AI组件库  
+ViewModel 管理状态       →      LangChain 管理对话记忆  
+WorkManager 处理任务链   →      LangChain 处理AI任务链  
+## 核心模块
+1.Models（模型层）：统一封装各家LLM，一套代码换模型。  
+2.Document Loaders（文档加载）：PDF、Word、网页、CSV... 一行代码加载。  
+3.Text Splitters（文本切块）：各种切割策略，不用自己写。  
+4.Embeddings（向量化）：对接各家Embedding模型。  
+5.Vector Stores（向量数据库）：Chroma、Milvus、Pinecone... 统一接口。  
+6.Chains（任务链）：把多个步骤串联成流水线。  
+7.Memory（记忆管理）：自动管理多轮对话历史。  
+8.Agents（智能体）：让AI自主决定调用哪些工具。
