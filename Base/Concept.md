@@ -126,7 +126,7 @@ Model Context Protocol,不是某个具体工具，而是一套面向模型工具
 4.调用结果怎么结构化返回  
 5.一个 server 如何被多个 client 复用
 ## CLI
-非常具体的工具入口，不需要理解太多协议，只需要调用命令、传参数、拿 stdout/stderr、再决定下一步。  
+（Command-Line Interface）非常具体的工具入口，不需要理解太多协议，只需要调用命令、传参数、拿 stdout/stderr、再决定下一步。  
 1.真正干活的本来就是CLI  
 2.对单机、本地环境来讲，更加灵活（权限和变量已经确认，执行边界依然清晰）  
 3.更省token（context更轻，agent聚焦决策，更容易命中缓存）
