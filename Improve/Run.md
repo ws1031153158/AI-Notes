@@ -27,4 +27,7 @@ MMR检索（mmr_retriever），最大边际相关性，解决结果重复问题�
 ## HTTP接口
 1.客户端需要通过HTTP调用  
 2.前后端分离，各自独立开发  
-3.换前端（Flutter/Web）不需要改后端
+3.换前端（Flutter/Web）不需要改后端  
+4.通过FastAPI+Pydantic（定义请求+响应格式）
+## 输出
+1.普通输出ResponseBody返回完整一段内容（string，可以说一个完整的data），流式输出（SSE，Server-Sent Events）Responsebody为多个key（data）-value（string）
