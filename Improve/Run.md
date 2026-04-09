@@ -31,3 +31,16 @@ MMR检索（mmr_retriever），最大边际相关性，解决结果重复问题�
 4.通过FastAPI+Pydantic（定义请求+响应格式）
 ## 输出
 1.普通输出ResponseBody返回完整一段内容（string，可以说一个完整的data），流式输出（SSE，Server-Sent Events）Responsebody为多个key（data）-value（string）
+# 多Agent
+1.单Agent：Prompt太长，容易混乱、分析不够深入。  
+2.多Agent：Prompt简洁，专注度高，各自深入分析，最后汇总，质量更高。
+## 并行
+通常Agent并行不是真正的多线程并行，而是"没有依赖关系的任务，不需要等待彼此"，本质上还是串行的 API 调用，只是调度顺序不同。  
+真正的并行需要：多线程 / 多进程 + 同时发出多个 API 请求。  
+LLM API 调用的限制：模型并发限制、每个 Agent 调用 API 是独立的 HTTP 请求，通常是利用一个“管理者Agent”来调度，管理者决定先让谁做，但还是串行调用。    
+真·并行：用asyncio同时发出多个请求，一般数据获取可以这样，但Agent分析层存在依赖关系的要顺序执行。
+## 框架
+1.CrewAI：概念最直观：Agent就是"角色"，Task就是"任务"，适合角色分工、流程固定   
+2.LangGraph：适合复杂流程、条件分支  
+3.AutoGen：需要Agent之间互相讨论、辩论  
+4.OpenAI Swarm:需要轻量级Agent转交任务时用
