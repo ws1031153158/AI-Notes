@@ -112,10 +112,71 @@ Schema 验证是结构化任务的关键（防止后续处理失败（JSON 解�
 API 调用失败、云端 RAG 检索超时或无结果  
 
 解决：  
-Cache-aside 模式：在工具调用时先查本地缓存，缓存命中 → 返回数据；未命中 → 请求 API  
+Cache-aside 模式：在工具调用时先查本地缓存，缓存命中 → 返回数据；未命中 → 请求 API → 写入缓存 → 返回数据  
 请求失败 → 自动降级本地 SQLite 向量库  
-需要让用户选择 Cache-aside（节约Token），或者直接请求云端（最新数据）
+需要让用户选择 Cache-aside（节约Token），或者直接请求云端（最新数据）  
+
+```
+模式 1：最新数据模式
+每次都请求 API
+请求失败时才用缓存
+优先保证数据实时性
+消耗 Token 成本高
+
+模式 2：节约 Token 模式
+Cache-aside 模式
+缓存命中直接返回
+缓存过期才请求 API
+优先保证成本和速度
+
+模式 3：离线模式
+只用缓存
+不请求 API
+节省网络和 Token
+
+enum class DataFetchMode {
+    LATEST,        // 最新数据模式
+    CACHE_FIRST,   // 节约Token模式
+    OFFLINE        // 离线模式
+}
+
+fun getData(mode: DataFetchMode): Data {
+    return when (mode) {
+        DataFetchMode.LATEST -> {
+            try {
+                val apiData = fetchFromApi()
+                cache.save(apiData)
+                apiData
+            } catch (e: Exception) {
+                cache.get() ?: throw e
+            }
+        }
+        DataFetchMode.CACHE_FIRST -> {
+            cache.get()?.let { return it }
+            val apiData = fetchFromApi()
+            cache.save(apiData)
+            apiData
+        }
+        DataFetchMode.OFFLINE -> {
+            cache.get() ?: throw OfflineException()
+        }
+    }
+}
+
+@Composable
+fun DataFetchModeSelector(
+    currentMode: DataFetchMode,
+    onModeChange: (DataFetchMode) -> Unit
+) {
+    DropdownMenu(...) {
+        DropdownMenuItem("最新数据", onClick = { onModeChange(DataFetchMode.LATEST) })
+        DropdownMenuItem("节约Token", onClick = { onModeChange(DataFetchMode.CACHE_FIRST) })
+        DropdownMenuItem("离线模式", onClick = { onModeChange(DataFetchMode.OFFLINE) })
+    }
+}
+```
 
 原理：  
 Cache-aside 模式：先查缓存，缓存未命中再查源  
-提高可用性，减少 API 调用次数，本地数据库不断保存云端返回数据，保障基础问答能力不中断
+提高可用性，减少 API 调用次数，节省Token，延迟低（缓存命中快）。  
+本地数据库不断保存云端返回数据，保障基础问答能力不中断
