@@ -37,3 +37,67 @@ Agent 看描述，判断调用 Skill
 第3次请求：在上一轮的 messages 基础上，追加 tool 执行结果
 ... ... 
 ```
+# 如何写好一个 Skill
+1.边界明确  
+2.输入输出结构化  
+3.步骤明确可执行  
+4.失败策略完备  
+5.单一职责
+# Skill Creator
+## 创建 Skill
+1. 捕获意图（Capture Intent）  
+从对话历史中提取信息（用了哪些工具、步骤顺序、用户纠正了什么）  
+要确认四个核心问题：  
+这个 skill 让 大模型 能做什么？   
+什么时候触发？  
+输出格式是什么？  
+是否需要测试用例？  
+特点：客观可验证的 skill（文件转换、代码生成）建议加测试用例；主观类（写作风格、艺术）通常不需要  
+
+2. 访谈与调研（Interview and Research）    
+主动提问边界情况、输入输出格式、成功标准、依赖关系  
+如果有 MCP 工具可用，通过并行子Agent同时调研  
+特点：先把问题搞清楚再写 test prompt，降低用户负担  
+
+3. 编写 SKILL.md    
+必须包含：name、description（触发机制）、具体指令  
+description 的特别设计：要"积极主动（pushy）"——大模型有低触发倾向，所以描述要明确列出各种触发场景
+
+4.Skill书写指南  
+```
+skill-name/
+├── SKILL.md          # 必须
+└── Bundled Resources/ # 可选
+    ├── scripts/      # 可执行脚本（无需加载即可运行）
+    ├── references/   # 按需加载的文档
+    └── assets/       # 模板、图标等
+```
+## 运行与评估测试用例
+1.同一轮次同时启动所有测试（with-skill + baseline）  
+对每个测试用例，同时启动两个子代理：  
+with_skill：带 skill 运行  
+without_skill（新建 skill）或 old_skill（改进已有 skill）：基线对比  
+特点：必须同时启动，不能先跑有 skill 的再回来跑基线  
+
+2.运行期间起草 Assertions（断言）  
+利用等待时间撰写量化断言，而不是干等  
+断言要求：客观可验证、名称描述性强（一眼看懂在测什么）  
+主观 skill（写作风格等）不要强行加断言，适合定性评估  
+更新 eval_metadata.json 和 evals/evals.json  
+
+3.子代理完成时立刻记录 timing 数据  
+子代理完成的通知中包含 total_tokens 和 duration_ms  
+必须立即保存到 timing.json（这是唯一的捕获机会）  
+
+4.打分 → 聚合 → 分析 → 启动可视化 Viewer    
+打分：使用 agents/grader.md 中的规范评估每条断言，能写脚本就写脚本（更可靠）  
+聚合基准：运行 scripts/aggregate_benchmark 生成 benchmark.json，含通过率、时间、token 数及标准差  
+分析师过审：识别"无论有没有 skill 都能通过"的无效断言、高方差（可能不稳定）的测试等  
+启动 Viewer：  
+Outputs 标签：查看每个测试用例的输出，可留反馈  
+Benchmark 标签：查看量化对比统计  
+无浏览器环境：用 --static 生成静态 HTML  
+## 迭代与触发优化
+根据用户反馈和量化数据重写 skill  
+多轮后扩大测试集规模再验证  
+最后可运行 description improver 脚本专门优化 skill 的触发准确性  
