@@ -101,3 +101,84 @@ Benchmark 标签：查看量化对比统计
 根据用户反馈和量化数据重写 skill  
 多轮后扩大测试集规模再验证  
 最后可运行 description improver 脚本专门优化 skill 的触发准确性  
+# 校验
+1.C1：缺少 IRON LAW  
+
+```
+> **IRON LAW**: NEVER [具体禁止行为]. ALWAYS [对应正确行为].
+```
+
+2.C2：缺少 Pre-Delivery Checklist  
+
+```
+## 交付前检查清单
+
+⛔ BLOCKING：以下全部打勾后才能输出：
+
+- [ ] 输出内容完整（无截断）
+- [ ] 无硬编码个人信息
+- [ ] 引用文件均存在
+- [ ] [根据 skill 类型添加具体项]
+```
+
+3.C3：缺少 Anti-Pattern 列表  
+
+```
+## Anti-Pattern 列表
+
+| # | 禁止行为 | 原因 |
+|---|---------|------|
+| 1 | [具体禁止行为] | [原因] |
+| 2 | [具体禁止行为] | [原因] |
+| 3 | [具体禁止行为] | [原因] |
+```
+
+4.C4：缺少 Eval 测试  
+
+```
+[
+  {
+    "prompt": "真实用户触发词",
+    "expected_behavior": "预期 agent 行为描述",
+    "should_trigger": true
+  },
+  {
+    "prompt": "不应触发的 prompt",
+    "expected_behavior": "不激活此 skill",
+    "should_trigger": false
+  }
+]
+```
+
+5.C5：改动类操作缺少 Confirmation Gate  
+
+```
+## ⛔ Confirmation Gate
+
+执行前向用户展示：
+- 目标：[路径/群ID/文档ID]
+- 操作：[具体会做什么]
+- 内容摘要：[前100字]
+
+**等待用户明确确认后再执行。**
+```
+
+6.C6：阶段无出口条件  
+
+```
+**出口条件**：[可 yes/no 判断的完成标准，例如"SQL 执行成功且返回结果不为空"]
+```
+
+7.C8：硬编码个人信息  
+
+```
+✗  "misId": "chenzhiguang02"  →  ✓  "misId": "<your_mis_id>"
+✗  "session": "abc123xyz"     →  ✓  "session": "<your_session_id>"
+✗  "appKey": "APP_KEY_XXXXX"  →  ✓  "appKey": "<your_app_key>"
+```
+
+8.C9：description 不完整  
+
+```
+description: "[用途一句话]。触发词：[触发词列表]。使用条件：[何时使用]。跳过条件：[何时不使用]。"
+```
