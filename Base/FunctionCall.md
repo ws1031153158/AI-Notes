@@ -41,20 +41,19 @@
   }
 }
 ```
-## Tool
+## Tool Schema
 ```
 {
-  "type": "function",
-  "function": {
-    "name": "extract_user_info",
-    "parameters": {
-      "type": "object",
-      "properties": {
-        "name": { "type": "string" },
-        "age": { "type": "integer" } // 强制要求是整数
-      },
-      "required": ["name", "age"]
-    }
+{
+  "name": "searchVideos",
+  "description": "Search videos by keyword",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "keyword": { "type": "string", "description": "Search keyword" },
+      "limit": { "type": "integer", "description": "Max number of results" }
+    },
+    "required": ["keyword"]
   }
 }
 ```
@@ -63,3 +62,23 @@
 1.输入包装：在 API 调用时，不把格式要求写在 content 里，而是传一个独立的 tools 参数  
 2.输出处理：当模型匹配到这个 Tool 时，会触发一个特殊的 Finish Reason: tool_calls。此时，模型内部的 Token 生成路径会被截断，直接跳过所有自然语言生成的概率分支，只输出 JSON 字符串  
 
+## Invocation
+```
+{
+  "tool": "searchVideos",
+  "arguments": {
+    "keyword": "TikTok dance",
+    "limit": 5
+  }
+}
+```
+## Response
+```
+{
+  "tool": "searchVideos",
+  "output": [
+    { "title": "Dance 1", "url": "..." },
+    { "title": "Dance 2", "url": "..." }
+  ]
+}
+```
